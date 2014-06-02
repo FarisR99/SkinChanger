@@ -1,0 +1,22 @@
+name: SkinChanger
+version: 1.0.0
+main: com.faris.skinchanger.Main
+description: Change player skins and display names without Spout!
+author: KingFaris10
+depend: [ProtocolLib]
+commands:
+    skinchanger:
+      description: SkinChanger command.
+      usage: /<command>
+    changeskin:
+      description: Change your/a player's skin!
+      usage: /<command> <username> [<player>]
+    changename:
+      description: Change your/a player's display name!
+      usage: /<command> <username> [<player>]
+    skinclicker:
+      description: Change your skin by right clicking a player!
+      usage: /<command>
+    resetchanges:
+      description: Reset the changes made by SkinChanger to you/a player.
+      usage: /<command> [<player>]
