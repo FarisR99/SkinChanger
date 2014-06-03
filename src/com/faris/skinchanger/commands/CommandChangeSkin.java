@@ -19,9 +19,9 @@ public class CommandChangeSkin extends CommandBase {
                     if (player.hasPermission(this.getPlugin().changeSkin)) {
                         String targetSkin = args[0];
                         String displayName = Main.getInstance().getDisplayFactory().getDisplayName(player);
-                        //Main.getInstance().getDisplayFactory().removeChanges(player);
-                        Main.getInstance().getSkinFactory().addSkinChange(player, targetSkin);
-                        //Main.getInstance().getDisplayFactory().refreshPlayer(player);
+                        Main.getInstance().getDisplayFactory().removeChanges(player);
+                        Main.getInstance().getDisplayFactory().changeDisplay(player, targetSkin, displayName);
+                        Main.getInstance().getDisplayFactory().refreshPlayer(player);
                         Lang.sendMessage(sender, Lang.COMMAND_CHANGED_SKIN, targetSkin);
                     } else {
                         Lang.sendMessage(sender, Lang.COMMAND_GEN_NOPERMISSION, command.toLowerCase());
@@ -35,10 +35,9 @@ public class CommandChangeSkin extends CommandBase {
                     Player targetPlayer = this.getPlayer(args, 1);
                     if (targetPlayer != null && targetPlayer.isOnline()) {
                         String displayName = Main.getInstance().getDisplayFactory().getDisplayName(targetPlayer);
-                        //Main.getInstance().getDisplayFactory().removeChanges(targetPlayer);
-                        //Main.getInstance().getDisplayFactory().changeDisplay(targetPlayer, targetSkin, displayName);
-                        Main.getInstance().getSkinFactory().addSkinChange(targetPlayer, targetSkin);
-                        //Main.getInstance().getDisplayFactory().refreshPlayer(targetPlayer);
+                        Main.getInstance().getDisplayFactory().removeChanges(targetPlayer);
+                        Main.getInstance().getDisplayFactory().changeDisplay(targetPlayer, targetSkin, displayName);
+                        Main.getInstance().getDisplayFactory().refreshPlayer(targetPlayer);
                         Lang.sendMessage(sender, Lang.COMMAND_CHANGED_SKIN_OTHER, targetPlayer.getName(), targetSkin);
                     } else {
                         Lang.sendMessage(sender, Lang.COMMAND_GEN_NOTONLINE, args[1]);

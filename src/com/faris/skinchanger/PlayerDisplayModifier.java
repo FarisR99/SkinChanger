@@ -120,11 +120,15 @@ public class PlayerDisplayModifier {
     }
 
     public String getDisplayName(Player player) {
-        return player != null ? this.getDisplayName(player.getName()) : "";
+        return player != null ? this.getDisplayName(player.getName(), player.getCustomName()) : "";
     }
 
     public String getDisplayName(String playerName) {
         return playerName != null ? (this.displayNames.containsKey(playerName) ? this.displayNames.get(playerName) : playerName) : "";
+    }
+
+    public String getDisplayName(String playerName, String defaultDisplayName) {
+        return playerName != null ? (this.displayNames.containsKey(playerName) ? this.displayNames.get(playerName) : defaultDisplayName) : defaultDisplayName;
     }
 
     public String getSkin(Player player) {

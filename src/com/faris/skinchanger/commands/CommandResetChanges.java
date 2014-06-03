@@ -17,9 +17,8 @@ public class CommandResetChanges extends CommandBase {
                 if (!this.isConsole(sender)) {
                     Player player = (Player) sender;
                     if (player.hasPermission(this.getPlugin().resetChanges)) {
-                        //Main.getInstance().getDisplayFactory().removeChanges(player);
-                        //Main.getInstance().getDisplayFactory().refreshPlayer(player);
-                        Main.getInstance().getSkinFactory().removeSkinChange(player);
+                        Main.getInstance().getDisplayFactory().removeChanges(player);
+                        Main.getInstance().getDisplayFactory().refreshPlayer(player);
                         Lang.sendMessage(sender, Lang.COMMAND_RESET);
                     } else {
                         Lang.sendMessage(sender, Lang.COMMAND_GEN_NOPERMISSION, command.toLowerCase());
@@ -31,9 +30,8 @@ public class CommandResetChanges extends CommandBase {
                 if (sender.hasPermission(this.getPlugin().resetChangesOther)) {
                     Player targetPlayer = this.getPlayer(args, 0);
                     if (targetPlayer != null && targetPlayer.isOnline()) {
-                        //Main.getInstance().getDisplayFactory().removeChanges(targetPlayer);
-                        //Main.getInstance().getDisplayFactory().refreshPlayer(targetPlayer);
-                        Main.getInstance().getSkinFactory().removeSkinChange(targetPlayer);
+                        Main.getInstance().getDisplayFactory().removeChanges(targetPlayer);
+                        Main.getInstance().getDisplayFactory().refreshPlayer(targetPlayer);
                         Lang.sendMessage(sender, Lang.COMMAND_RESET_OTHER, targetPlayer.getName());
                     } else {
                         Lang.sendMessage(sender, Lang.COMMAND_GEN_NOTONLINE, args[0]);

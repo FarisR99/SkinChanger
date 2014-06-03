@@ -20,7 +20,6 @@ public class Main extends JavaPlugin {
     private boolean joinSkin = false;
 
     private PlayerDisplayModifier displayFactory = null;
-    private SkinChangeFactory skinFactory = null;
 
     private List<String> joinSkins = null;
     private List<String> skinClickers = null;
@@ -77,7 +76,6 @@ public class Main extends JavaPlugin {
             }
 
             this.displayFactory = new PlayerDisplayModifier(this);
-            this.skinFactory = new SkinChangeFactory(this);
             this.skinClickers = new ArrayList<String>();
 
             this.getServer().getPluginManager().addPermission(this.changeSkin);
@@ -158,10 +156,6 @@ public class Main extends JavaPlugin {
 
     public PlayerDisplayModifier getDisplayFactory() {
         return this.displayFactory;
-    }
-
-    public SkinChangeFactory getSkinFactory() {
-        return this.skinFactory;
     }
 
     public boolean removeClicker(Player player) {
