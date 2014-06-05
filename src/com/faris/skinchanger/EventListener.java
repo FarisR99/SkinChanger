@@ -34,9 +34,10 @@ public class EventListener implements Listener {
             if (Main.getInstance().isPluginEnabled() && Main.getInstance().isClicker(event.getPlayer())) {
                 String displayName = Main.getInstance().getDisplayFactory().getDisplayName(event.getPlayer());
                 Main.getInstance().getDisplayFactory().removeChanges(event.getPlayer());
-                Main.getInstance().getDisplayFactory().changeDisplay(event.getPlayer(), ((Player) event.getRightClicked()).getName(), displayName);
+                String targetSkin = ((Player) event.getRightClicked()).getName();
+                Main.getInstance().getDisplayFactory().changeDisplay(event.getPlayer(), targetSkin, displayName);
                 Main.getInstance().getDisplayFactory().refreshPlayer(event.getPlayer());
-                Lang.sendMessage(event.getPlayer(), Lang.COMMAND_CHANGED_SKIN, event.getPlayer().getName());
+                Lang.sendMessage(event.getPlayer(), Lang.COMMAND_CHANGED_SKIN, targetSkin);
             }
         }
     }

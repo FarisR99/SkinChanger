@@ -20,7 +20,7 @@ public class CommandChangeName extends CommandBase {
                         String targetName = args[0];
                         String skin = Main.getInstance().getDisplayFactory().getSkin(player);
                         Main.getInstance().getDisplayFactory().removeChanges(player);
-                        Main.getInstance().getDisplayFactory().changeDisplay(player, skin, targetName);
+                        Main.getInstance().getDisplayFactory().changeDisplay(player, skin, Lang.replaceColours(targetName));
                         Main.getInstance().getDisplayFactory().refreshPlayer(player);
                         Lang.sendMessage(sender, Lang.COMMAND_CHANGED_NAME, targetName);
 
@@ -37,9 +37,9 @@ public class CommandChangeName extends CommandBase {
                     if (targetPlayer != null && targetPlayer.isOnline()) {
                         String skin = Main.getInstance().getDisplayFactory().getSkin(targetPlayer);
                         Main.getInstance().getDisplayFactory().removeChanges(targetPlayer);
-                        Main.getInstance().getDisplayFactory().changeDisplay(targetPlayer, skin, targetName);
+                        Main.getInstance().getDisplayFactory().changeDisplay(targetPlayer, skin, Lang.replaceColours(targetName));
                         Main.getInstance().getDisplayFactory().refreshPlayer(targetPlayer);
-                        Lang.sendMessage(sender, Lang.COMMAND_CHANGED_NAME_OTHER, targetPlayer.getName(), targetName);
+                        Lang.sendMessage(sender, Lang.COMMAND_CHANGED_NAME_OTHER, targetPlayer.getName(), Lang.replaceColours(targetName));
                     } else {
                         Lang.sendMessage(sender, Lang.COMMAND_GEN_NOTONLINE, args[1]);
                     }

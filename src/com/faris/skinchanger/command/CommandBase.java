@@ -2,6 +2,7 @@ package com.faris.skinchanger.command;
 
 import com.faris.skinchanger.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +14,13 @@ import org.bukkit.entity.Player;
 public abstract class CommandBase implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        return Main.getInstance().isPluginEnabled() && this.onCommand(sender, cmd.getName(), args);
+        try {
+            return Main.getInstance().isPluginEnabled() && this.onCommand(sender, cmd.getName(), args);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Lang.sendMessage(sender, Lang.COMMAND_ERROR, label.toLowerCase());
+            return true;
+        }
     }
 
     protected abstract boolean onCommand(CommandSender sender, String command, String[] args);

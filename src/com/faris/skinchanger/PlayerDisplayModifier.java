@@ -194,6 +194,10 @@ public class PlayerDisplayModifier {
         changeDisplay(string, toSkin, null);
     }
 
+    public void changeDisplayName(String string, String toName) {
+        changeDisplay(string, null, toName);
+    }
+
     public void changeDisplay(Player player, String toSkin, String toName) {
         if (updateMap(skinNames, player.getName(), toSkin) |
                 updateMap(displayNames, player.getName(), toName)) {

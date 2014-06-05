@@ -24,6 +24,7 @@ public class Main extends JavaPlugin {
     private List<String> joinSkins = null;
     private List<String> skinClickers = null;
 
+    public Permission reloadPermission = new Permission("skinchanger.reload");
     public Permission changeSkin = new Permission("skinchanger.change.skin");
     public Permission changeSkinOther = new Permission("skinchanger.change.skin.other");
     public Permission changeName = new Permission("skinchanger.change.name");
@@ -45,39 +46,12 @@ public class Main extends JavaPlugin {
                 ex.printStackTrace();
                 this.getServer().getLogger().warning("Could not load the messages file! Using default messages...");
             }
-
-            this.checkUpdate = false;
-            if (this.checkUpdate) { // This will always be false until I get the Project ID.
-                int projectID = -1; // TODO: Get the project ID once approved.
-                Updater updater = new Updater(this, projectID, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-                if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
-                    this.getLogger().info(updater.getLatestName() + " has been found. Your current version is: " + this.getDescription().getFullName());
-                    if (this.shouldUpdate) {
-                        this.getLogger().info("Updating please wait...");
-                        updater = new Updater(this, projectID, this.getFile(), Updater.UpdateType.NO_VERSION_CHECK, false);
-                        String errorMessage = "Could not update to the latest version: ";
-                        Updater.UpdateResult updateResult = updater.getResult();
-                        boolean hasError = updateResult != Updater.UpdateResult.SUCCESS;
-                        if (updateResult == Updater.UpdateResult.DISABLED) errorMessage += "Updater is disabled.";
-                        else if (updateResult == Updater.UpdateResult.FAIL_APIKEY) errorMessage += "Invalid API key.";
-                        else if (updateResult == Updater.UpdateResult.FAIL_BADID) errorMessage += "Invalid updater ID.";
-                        else if (updateResult == Updater.UpdateResult.FAIL_DBO) errorMessage += "Invalid DBO.";
-                        else if (updateResult == Updater.UpdateResult.FAIL_DOWNLOAD)
-                            errorMessage += "Failed to download the latest version.";
-                        else if (updateResult == Updater.UpdateResult.FAIL_NOVERSION)
-                            errorMessage += "There is no latest version.";
-                        else errorMessage += "null";
-                        if (hasError) this.getLogger().warning(errorMessage);
-                        else this.getLogger().info("Successfully updated to " + updater.getLatestName() + "!");
-                    } else {
-                        this.getLogger().info("You can download the latest version at: " + updater.getLatestFileLink());
-                    }
-                }
-            }
+            this.checkUpdates();
 
             this.displayFactory = new PlayerDisplayModifier(this);
             this.skinClickers = new ArrayList<String>();
 
+            this.getServer().getPluginManager().addPermission(this.reloadPermission);
             this.getServer().getPluginManager().addPermission(this.changeSkin);
             this.getServer().getPluginManager().addPermission(this.changeSkinOther);
             this.getServer().getPluginManager().addPermission(this.changeName);
@@ -138,6 +112,36 @@ public class Main extends JavaPlugin {
         return false;
     }
 
+    public void checkUpdates() {
+        if (this.checkUpdate) {
+            int projectID = 80599;
+            Updater updater = new Updater(this, projectID, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+            if (updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {
+                this.getLogger().info(updater.getLatestName() + " has been found. Your current version is: " + this.getDescription().getFullName());
+                if (this.shouldUpdate) {
+                    this.getLogger().info("Updating, please wait...");
+                    updater = new Updater(this, projectID, this.getFile(), Updater.UpdateType.NO_VERSION_CHECK, false);
+                    String errorMessage = "Could not update to the latest version: ";
+                    Updater.UpdateResult updateResult = updater.getResult();
+                    boolean hasError = updateResult != Updater.UpdateResult.SUCCESS;
+                    if (updateResult == Updater.UpdateResult.DISABLED) errorMessage += "Updater is disabled.";
+                    else if (updateResult == Updater.UpdateResult.FAIL_APIKEY) errorMessage += "Invalid API key.";
+                    else if (updateResult == Updater.UpdateResult.FAIL_BADID) errorMessage += "Invalid updater ID.";
+                    else if (updateResult == Updater.UpdateResult.FAIL_DBO) errorMessage += "Invalid DBO.";
+                    else if (updateResult == Updater.UpdateResult.FAIL_DOWNLOAD)
+                        errorMessage += "Failed to download the latest version.";
+                    else if (updateResult == Updater.UpdateResult.FAIL_NOVERSION)
+                        errorMessage += "There is no latest version.";
+                    else errorMessage += "null";
+                    if (hasError) this.getLogger().warning(errorMessage);
+                    else this.getLogger().info("Successfully updated to " + updater.getLatestName() + "!");
+                } else {
+                    this.getLogger().info("You can download the latest version at: " + updater.getLatestFileLink());
+                }
+            }
+        }
+    }
+
     public boolean getChangeSkinsOnJoin() {
         return this.joinSkin;
     }
@@ -182,6 +186,7 @@ public class Main extends JavaPlugin {
             this.skinClickers.clear();
             this.skinClickers = null;
 
+            this.getServer().getPluginManager().removePermission(this.reloadPermission);
             this.getServer().getPluginManager().removePermission(this.changeSkin);
             this.getServer().getPluginManager().removePermission(this.changeSkinOther);
             this.getServer().getPluginManager().removePermission(this.changeName);
