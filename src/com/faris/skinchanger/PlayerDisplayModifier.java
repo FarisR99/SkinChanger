@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.faris.skinchanger.utils.UUIDFetcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
@@ -49,7 +50,7 @@ public class PlayerDisplayModifier {
     private ConcurrentMap<String, String> skinNames = Maps.newConcurrentMap();
     private ConcurrentMap<String, String> displayNames = Maps.newConcurrentMap();
 
-    private Cache<String, String> profileCache = CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(4, TimeUnit.HOURS).build(new CacheLoader<String, String>() {
+    private Cache<String, String> profileCache = CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(4, TimeUnit.HOURS).build(new CacheLoader<String, String>() {
         public String load(String name) throws Exception {
             return getProfileJson(name);
         }
@@ -87,15 +88,24 @@ public class PlayerDisplayModifier {
                         }
                         StructureModifier<WrappedGameProfile> profiles = event.getPacket().getGameProfiles();
                         WrappedGameProfile original = profiles.read(0);
-                        WrappedGameProfile result = new WrappedGameProfile(
-                                extractUUID(original.getName()),
-                                displayName != null ? displayName : original.getName()
-                        );
+                        WrappedGameProfile result = null;
                         try {
-                            updateSkin(result, skinName != null ? skinName : result.getName());
+                            UUID extractedUUID = extractUUID(original.getName());
+                            result = new WrappedGameProfile(extractedUUID, displayName != null ? displayName : original.getName());
                         } catch (Exception ex) {
+                            try {
+                                UUID nullUUID = extractUUID("Steve");
+                                skinName = "Steve";
+                                result = new WrappedGameProfile(nullUUID, displayName != null ? displayName : original.getName());
+                            } catch (Exception ex2) {
+                                result = null;
+                            }
+                        } finally {
+                            if (result != null) {
+                                updateSkin(result, skinName != null ? skinName : result.getName());
+                                profiles.write(0, result);
+                            }
                         }
-                        profiles.write(0, result);
                     }
                 }
         ).start(WORKER_THREADS);
@@ -103,20 +113,41 @@ public class PlayerDisplayModifier {
 
     @SuppressWarnings("deprecation")
     private UUID extractUUID(final String playerName) {
-        return Bukkit.getOfflinePlayer(playerName).getUniqueId();
+        try {
+            return UUIDFetcher.getUUIDOf(playerName);
+        } catch (Exception ex) {
+            throw new RuntimeException("Cannot fetch UUID.", ex);
+        }
     }
 
     // This will be cached by Guava
     private String getProfileJson(String name) throws IOException {
-        final URL url = new URL(PROFILE_URL + extractUUID(name).toString().replace("-", ""));
-        final URLConnection uc = url.openConnection();
+        try {
+            final URL url = new URL(PROFILE_URL + extractUUID(name).toString().replace("-", ""));
+            final URLConnection uc = url.openConnection();
 
-        return CharStreams.toString(new InputSupplier<InputStreamReader>() {
-            @Override
-            public InputStreamReader getInput() throws IOException {
-                return new InputStreamReader(uc.getInputStream(), Charsets.UTF_8);
+            return CharStreams.toString(new InputSupplier<InputStreamReader>() {
+                @Override
+                public InputStreamReader getInput() throws IOException {
+                    return new InputStreamReader(uc.getInputStream(), Charsets.UTF_8);
+                }
+            });
+        } catch (Exception ex) {
+            try {
+
+                final URL url = new URL(PROFILE_URL + extractUUID("Steve").toString().replace("-", ""));
+                final URLConnection uc = url.openConnection();
+
+                return CharStreams.toString(new InputSupplier<InputStreamReader>() {
+                    @Override
+                    public InputStreamReader getInput() throws IOException {
+                        return new InputStreamReader(uc.getInputStream(), Charsets.UTF_8);
+                    }
+                });
+            } catch (Exception ex2) {
+                return "Steve";
             }
-        });
+        }
     }
 
     public String getDisplayName(Player player) {
@@ -156,7 +187,6 @@ public class PlayerDisplayModifier {
             }
         } catch (Exception e) {
             // ProtocolLib will throttle the number of exceptions printed to the console log
-            throw new RuntimeException("Cannot fetch profile for " + skinOwner, e);
         }
     }
 
