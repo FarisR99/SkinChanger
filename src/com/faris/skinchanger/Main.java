@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
@@ -39,34 +40,7 @@ public class Main extends JavaPlugin {
 
         this.pluginEnabled = this.getServer().getPluginManager().isPluginEnabled("ProtocolLib");
         if (this.pluginEnabled) {
-            this.loadConfiguration();
-            try {
-                Lang.init(this);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                this.getServer().getLogger().warning("Could not load the messages file! Using default messages...");
-            }
-            this.checkUpdates();
-
-            this.displayFactory = new PlayerDisplayModifier(this);
-            this.skinClickers = new ArrayList<String>();
-
-            this.getServer().getPluginManager().addPermission(this.reloadPermission);
-            this.getServer().getPluginManager().addPermission(this.changeSkin);
-            this.getServer().getPluginManager().addPermission(this.changeSkinOther);
-            this.getServer().getPluginManager().addPermission(this.changeName);
-            this.getServer().getPluginManager().addPermission(this.changeNameOther);
-            this.getServer().getPluginManager().addPermission(this.resetChanges);
-            this.getServer().getPluginManager().addPermission(this.resetChangesOther);
-            this.getServer().getPluginManager().addPermission(this.skinClicker);
-            this.getServer().getPluginManager().addPermission(this.joinSkinPermission);
-            this.getServer().getPluginManager().registerEvents(new EventListener(), this);
-
-            this.getCommand("skinchanger").setExecutor(new CommandSkinChanger());
-            this.getCommand("changeskin").setExecutor(new CommandChangeSkin());
-            this.getCommand("changename").setExecutor(new CommandChangeName());
-            this.getCommand("skinclicker").setExecutor(new CommandSkinClicker());
-            this.getCommand("resetchanges").setExecutor(new CommandResetChanges());
+            this.enablePlugin();
         } else {
             this.getServer().getLogger().log(Level.SEVERE, "ProtocolLib is required to use this plugin!");
         }
@@ -169,11 +143,11 @@ public class Main extends JavaPlugin {
         return false;
     }
 
-    public void setPluginEnabled(boolean flag) {
+    protected void setPluginEnabled(boolean flag) {
         this.pluginEnabled = flag;
     }
 
-    public void disablePlugin() {
+    protected void disablePlugin() {
         if (this.pluginEnabled) {
             for (Player player : Bukkit.getServer().getOnlinePlayers())
                 this.displayFactory.removeChanges(player);
@@ -195,6 +169,59 @@ public class Main extends JavaPlugin {
             this.getServer().getPluginManager().removePermission(this.resetChangesOther);
             this.getServer().getPluginManager().removePermission(this.skinClicker);
             this.getServer().getPluginManager().removePermission(this.joinSkinPermission);
+
+            Bukkit.getScheduler().cancelTasks(this);
+        }
+    }
+
+    protected void enablePlugin() {
+        if (this.pluginEnabled) {
+            this.loadConfiguration();
+            try {
+                Lang.init(this);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                this.getServer().getLogger().warning("Could not load the messages file! Using default messages...");
+            }
+            this.checkUpdates();
+
+            this.displayFactory = new PlayerDisplayModifier(this);
+            this.skinClickers = new ArrayList<String>();
+
+            this.getServer().getPluginManager().addPermission(this.reloadPermission);
+            this.getServer().getPluginManager().addPermission(this.changeSkin);
+            this.getServer().getPluginManager().addPermission(this.changeSkinOther);
+            this.getServer().getPluginManager().addPermission(this.changeName);
+            this.getServer().getPluginManager().addPermission(this.changeNameOther);
+            this.getServer().getPluginManager().addPermission(this.resetChanges);
+            this.getServer().getPluginManager().addPermission(this.resetChangesOther);
+            this.getServer().getPluginManager().addPermission(this.skinClicker);
+            this.getServer().getPluginManager().addPermission(this.joinSkinPermission);
+            this.getServer().getPluginManager().registerEvents(new EventListener(), this);
+
+            this.getCommand("skinchanger").setExecutor(new CommandSkinChanger());
+            this.getCommand("changeskin").setExecutor(new CommandChangeSkin());
+            this.getCommand("changename").setExecutor(new CommandChangeName());
+            this.getCommand("skinclicker").setExecutor(new CommandSkinClicker());
+            this.getCommand("resetchanges").setExecutor(new CommandResetChanges());
+
+            if (this.joinSkin) {
+                this.getServer().getScheduler().runTaskLater(this, new Runnable() {
+                    public void run() {
+                        if (joinSkin) {
+                            if (!joinSkins.isEmpty()) {
+                                final Random random = new Random();
+                                for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()) {
+                                    if (onlinePlayer.hasPermission(joinSkinPermission) && !displayFactory.hasSkin(onlinePlayer)) {
+                                        displayFactory.changeDisplay(onlinePlayer, joinSkins.get(random.nextInt(joinSkins.size())), displayFactory.getDisplayName(onlinePlayer));
+                                        displayFactory.refreshPlayer(onlinePlayer);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, 20L);
+            }
         }
     }
 

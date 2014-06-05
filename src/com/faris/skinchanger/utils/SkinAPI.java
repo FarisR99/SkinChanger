@@ -64,7 +64,7 @@ public class SkinAPI {
             return true;
         } else {
             if (!skinUsername.isEmpty())
-                Main.getInstance().getDisplayFactory().changeDisplay(player.getName(), skinUsername);
+                Main.getInstance().getDisplayFactory().changeDisplay(player.getName(), skinUsername, getDisplayName(player));
             return skinUsername.isEmpty();
         }
     }
@@ -82,7 +82,7 @@ public class SkinAPI {
             return true;
         } else {
             if (!displayName.isEmpty())
-                Main.getInstance().getDisplayFactory().changeDisplayName(player.getName(), Lang.replaceColours(displayName));
+                Main.getInstance().getDisplayFactory().changeDisplay(player.getName(), getSkin(player), Lang.replaceColours(displayName));
             return displayName.isEmpty();
         }
     }

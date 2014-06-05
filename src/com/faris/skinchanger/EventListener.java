@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 
 import java.util.List;
 import java.util.Random;
@@ -53,9 +54,17 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
-        if (event.getPlugin().getDescription().getName().equals("ProtocolLib")) {
+        if (event.getPlugin().getDescription().getName().equals("ProtocolLib") && Main.getInstance().isPluginEnabled()) {
             Main.getInstance().disablePlugin();
             Main.getInstance().setPluginEnabled(false);
+        }
+    }
+
+    @EventHandler
+    public void onPluginEnable(PluginEnableEvent event) {
+        if (!Main.getInstance().isPluginEnabled() && event.getPlugin().getDescription().getName().equals("ProtocolLib")) {
+            Main.getInstance().setPluginEnabled(true);
+            Main.getInstance().enablePlugin();
         }
     }
 

@@ -170,6 +170,14 @@ public class PlayerDisplayModifier {
         return playerName != null ? (this.skinNames.containsKey(playerName) ? this.skinNames.get(playerName) : playerName) : "";
     }
 
+    public boolean hasSkin(Player player) {
+        return player != null ? this.hasSkin(player.getName()) : false;
+    }
+
+    public boolean hasSkin(String playerName) {
+        return this.skinNames.containsKey(playerName);
+    }
+
     private void updateSkin(WrappedGameProfile profile, String skinOwner) {
         try {
             JSONObject json = (JSONObject) new JSONParser().parse(profileCache.get(skinOwner));
